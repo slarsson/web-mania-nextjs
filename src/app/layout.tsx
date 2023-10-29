@@ -18,7 +18,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <header>
-          <h1>SL.se</h1>
+          <h1>sl</h1>
         </header>
         {children}
         <footer></footer>

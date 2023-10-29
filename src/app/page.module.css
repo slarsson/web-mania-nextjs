@@ -4,6 +4,11 @@
   justify-content: center;
 }
 
+.main a {
+  background-color: red;
+  padding: 10px;
+}
+
 .text {
   color: #fff;
   font-size: 20px;

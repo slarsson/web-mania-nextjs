@@ -30,7 +30,7 @@ body {
 
 body {
   color: rgb(var(--foreground-rgb));
-  background-color: var(--main-bg);
+  /* background-color: var(--main-bg); */
   min-height: 100vh;
   min-width: 100vw;
   display: flex;

@@ -16,9 +16,16 @@ export async function POST(
 
   const user = await authorizationCodeToJWT(Provider.Google, code, redirectUri)
 
-  return NextResponse.json({
-    token: user.token,
-    email: user.email,
-    picture: user.picture,
-  })
+  return NextResponse.json(
+    {
+      token: user.token,
+      email: user.email,
+      picture: user.picture,
+    },
+    {
+      headers: {
+        'Set-Cookie': `session=${user.token};path=/;`,
+      },
+    }
+  )
 }

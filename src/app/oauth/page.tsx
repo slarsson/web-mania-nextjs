@@ -2,24 +2,49 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { setSessionCookie } from '@/session'
 
 export default function Page({
   searchParams,
 }: {
   searchParams: { [key: string]: string | string[] | undefined }
 }) {
-  const [tokenError, setTokenError] = useState<string | undefined>(undefined)
-  const code = searchParams?.code ?? ''
   const router = useRouter()
+  const { loading, error } = useTokenEndpoint(extractCodeParam(searchParams))
+
+  if (loading) {
+    return <div>loading...</div>
+  }
+
+  if (error) {
+    return <div>error: {JSON.stringify(error)}</div>
+  }
+
+  router.push('/profile')
+}
+
+function extractCodeParam(params: {
+  [key: string]: string | string[] | undefined
+}): string {
+  const arrOrString = params?.code ?? ''
+  const code = arrOrString instanceof Array ? '' : arrOrString
+  return code
+}
+
+const useTokenEndpoint = (code: string) => {
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<any>(undefined)
+  const [data, setData] = useState<
+    { token: string; email: string } | undefined
+  >(undefined)
 
   useEffect(() => {
-    if (!code || code instanceof Array) {
-      setTokenError('no code found :(')
+    if (code == '') {
+      setError('no code found :(')
+      setLoading(false)
       return
     }
 
-    const get = async () => {
+    const fetchData = async () => {
       try {
         const req = await fetch('/oauth/token', {
           method: 'POST',
@@ -28,20 +53,23 @@ export default function Page({
             redirectUri: 'http://localhost:3000/oauth',
           }),
         })
-        const data = (await req.json()) as {
+        const payload = (await req.json()) as {
           token: string
+          email: string
         }
-        setSessionCookie(data.token)
-        router.push('/profile')
+        setData(payload)
+        setLoading(false)
       } catch (err) {
-        setTokenError('failed to get token :(')
+        setError(err)
+        setLoading(false)
       }
     }
-    get()
-  }, [code, router])
+    fetchData()
+  }, [code])
 
-  if (tokenError) {
-    return <div>error: {tokenError}</div>
+  return {
+    data: data,
+    loading: loading,
+    error: error,
   }
-  return <div>loading...</div>
 }

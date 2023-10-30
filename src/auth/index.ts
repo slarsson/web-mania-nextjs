@@ -73,11 +73,8 @@ async function authorizationCodeToJWT(
   console.log(`authorizationCodeToJWT:`, data.id_token, data.expires_in)
 
   const jwt = decodeJwt(data.id_token)
-
-  // TODO: validate
   const email = (jwt?.email as string) ?? ''
-
-  const token = await encode(email, '1h')
+  const token = await encode(email, '5m')
 
   return {
     email: email,

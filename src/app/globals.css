@@ -30,7 +30,7 @@ body {
 
 body {
   color: rgb(var(--foreground-rgb));
-  background-color: var(--main-bg);
+  /* background-color: var(--main-bg); */
   min-height: 100vh;
   min-width: 100vw;
   display: flex;
@@ -71,4 +71,8 @@ kbd {
   border-radius: 2px;
   box-shadow: 0px 0px 200px 20px #fff;
   font-weight: bold;
+}
+
+img {
+  max-width: 100px;
 }

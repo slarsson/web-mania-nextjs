@@ -10,7 +10,7 @@ export enum Provider {
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID ?? ''
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET ?? ''
 
-export function authorizationRedirectUrl(
+export function authenticationRedirectUrl(
   provider: Provider,
   redirectUri: string
 ): string {
@@ -35,7 +35,7 @@ type TokenResponse = {
   expires_in: number
 }
 
-export async function authorizationCodeToJWT(
+export async function authenticationCodeToJWT(
   provider: Provider,
   code: string,
   redirectUri: string
@@ -66,7 +66,7 @@ export async function authorizationCodeToJWT(
     throw `got unexpected status code: ${resp.status}`
   }
 
-  console.log(`authorizationCodeToJWT:`, data.id_token, data.expires_in)
+  console.log(`authenticationCodeToJWT:`, data.id_token, data.expires_in)
 
   const jwt = decodeJwt(data.id_token)
   const email = (jwt?.email as string) ?? ''

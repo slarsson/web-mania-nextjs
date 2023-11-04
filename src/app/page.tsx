@@ -1,17 +1,10 @@
+import Link from 'next/link'
 import styles from './page.module.css'
-import { Provider, authorizationRedirectUrl } from '@/auth/auth'
 
-export default function Home() {
+export default function Page() {
   return (
     <main className={styles.main}>
-      <a
-        href={authorizationRedirectUrl(
-          Provider.Google,
-          'http://localhost:3000/oauth'
-        )}
-      >
-        Sign in with Google
-      </a>
+      <Link href={'/dashboard'}>My dashboard</Link>
     </main>
   )
 }

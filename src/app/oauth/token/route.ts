@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { Provider, authorizationCodeToJWT } from '@/auth/auth'
+import { Provider, authenticationCodeToJWT } from '@/auth/auth'
 import { SESSION_COOKIE } from '@/auth/auth'
 
 export async function POST(
@@ -15,7 +15,7 @@ export async function POST(
 
   const { code, redirectUri } = data.parse(body)
 
-  const user = await authorizationCodeToJWT(Provider.Google, code, redirectUri)
+  const user = await authenticationCodeToJWT(Provider.Google, code, redirectUri)
 
   return NextResponse.json(
     {

@@ -4,16 +4,6 @@
   justify-content: center;
 }
 
-.main a {
-  background-color: red;
-  padding: 10px;
-}
-
-.text {
-  color: #fff;
-  font-size: 20px;
-}
-
 /* Tablet and Smaller Desktop */
 /* @media (min-width: 701px) and (max-width: 1120px) {
   .grid {

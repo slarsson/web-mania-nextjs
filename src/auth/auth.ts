@@ -1,14 +1,16 @@
 import { decodeJwt } from 'jose'
-import { encode, verify } from './jwt'
+import { encode } from './jwt'
 
-enum Provider {
+export const SESSION_COOKIE = 'session'
+
+export enum Provider {
   Google,
 }
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID ?? ''
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET ?? ''
 
-function authorizationRedirectUrl(
+export function authorizationRedirectUrl(
   provider: Provider,
   redirectUri: string
 ): string {
@@ -28,22 +30,16 @@ function authorizationRedirectUrl(
   return url.toString()
 }
 
-type User = {
-  email: string
-  picture?: string
-  token: string
-}
-
 type TokenResponse = {
   id_token: string
   expires_in: number
 }
 
-async function authorizationCodeToJWT(
+export async function authorizationCodeToJWT(
   provider: Provider,
   code: string,
   redirectUri: string
-): Promise<User> {
+): Promise<{ token: string }> {
   if (provider != Provider.Google) {
     throw 'only Google is supported for now :('
   }
@@ -74,17 +70,10 @@ async function authorizationCodeToJWT(
 
   const jwt = decodeJwt(data.id_token)
   const email = (jwt?.email as string) ?? ''
-  const token = await encode(email, '5m')
+  const image = (jwt?.picture as string) ?? undefined
+  const token = await encode(email, image, '5m')
 
   return {
-    email: email,
-    picture: (jwt?.picture as string) ?? undefined,
     token: token,
   }
 }
-
-async function verifyJWT(token: string): Promise<void> {
-  return verify(token)
-}
-
-export { Provider, authorizationRedirectUrl, authorizationCodeToJWT, verifyJWT }

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { verifyJWT } from './auth'
+import { verify } from './auth/jwt'
 
 export async function middleware(req: NextRequest) {
   const cookie = req.cookies.get('session')
@@ -10,7 +10,7 @@ export async function middleware(req: NextRequest) {
   }
 
   try {
-    await verifyJWT(cookie.value)
+    await verify(cookie.value)
   } catch (err) {
     console.log(err)
     return NextResponse.redirect(req.nextUrl.origin)
@@ -18,5 +18,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: '/profile',
+  matcher: '/dashboard',
 }

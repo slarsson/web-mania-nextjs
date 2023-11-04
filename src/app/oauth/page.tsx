@@ -15,7 +15,7 @@ export default function Page({
     if (loading && !error) {
       return
     }
-    router.push('/profile')
+    router.push('/dashboard')
   }, [loading, router, error])
 
   if (loading) {

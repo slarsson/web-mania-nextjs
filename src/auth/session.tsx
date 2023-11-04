@@ -1,20 +1,31 @@
 'use client'
 
-import { redirect } from 'next/navigation'
-import React, { createContext, useContext } from 'react'
+import React, { createContext, useContext, useEffect, useState } from 'react'
 import Cookies from 'js-cookie'
 import { decode } from './jwt'
+import { SESSION_COOKIE } from './auth'
 
-export const SESSION_COOKIE = 'session'
+export type User = {
+  email: string
+  image: string | undefined
+}
 
-const UserContext = createContext<{ email: string } | undefined>(undefined)
+// TODO: add error
+const UserContext = createContext<{
+  user: User | undefined
+  setUser: () => void
+}>({ user: undefined, setUser: () => {} })
 
 export const useUser = () => {
-  const user = useContext(UserContext)
-  if (!user) {
-    redirect('/')
-  }
-  return user
+  const ctx = useContext(UserContext)
+
+  useEffect(() => {
+    if (!ctx.user) {
+      ctx.setUser()
+    }
+  }, [ctx])
+
+  return ctx.user
 }
 
 export const SessionProvider = ({
@@ -22,16 +33,29 @@ export const SessionProvider = ({
 }: {
   children: React.ReactNode
 }) => {
-  let user: { email: string } | undefined = undefined
+  const [user, setUser] = useState<User | undefined>(undefined)
 
-  const jwt = Cookies.get(SESSION_COOKIE)
-
-  if (jwt) {
-    const payload = decode(jwt)
-    user = {
-      email: payload.email,
+  const fromCookie = () => {
+    const jwt = Cookies.get(SESSION_COOKIE)
+    if (jwt) {
+      const payload = decode(jwt)
+      setUser({
+        email: payload.email,
+        image: payload.image,
+      })
     }
   }
 
-  return <UserContext.Provider value={user}>{children}</UserContext.Provider>
+  useEffect(() => {
+    if (!user) {
+      fromCookie()
+    }
+  }, [user])
+
+  const value = {
+    user: user,
+    setUser: () => fromCookie(),
+  }
+
+  return <UserContext.Provider value={value}>{children}</UserContext.Provider>
 }

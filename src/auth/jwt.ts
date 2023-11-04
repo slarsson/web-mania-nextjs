@@ -2,16 +2,27 @@ import { SignJWT, jwtVerify, decodeJwt } from 'jose'
 
 const JWT_SECRET = process.env.JWT_SECRECT ?? ''
 
-async function encode(email: string, ttl: string): Promise<string> {
-  const secret = new TextEncoder().encode(JWT_SECRET)
+interface TokenClaims {
+  email: string
+  image: string | undefined
+}
 
+// https://www.typescriptlang.org/docs/handbook/declaration-merging.html#merging-interfaces
+declare module 'jose' {
+  export interface JWTPayload extends TokenClaims {}
+}
+
+async function encode(
+  email: string,
+  image: string | undefined,
+  ttl: string
+): Promise<string> {
+  const secret = new TextEncoder().encode(JWT_SECRET)
   const alg = 'HS256'
 
-  return new SignJWT({ email })
+  return new SignJWT({ email, image })
     .setProtectedHeader({ alg })
     .setIssuedAt()
-    .setIssuer('urn:example:issuer')
-    .setAudience('urn:example:audience')
     .setExpirationTime(ttl)
     .sign(secret)
 }
@@ -24,26 +35,15 @@ async function verify(token: string): Promise<void> {
   const expires = payload.exp || 0
   const nowInSeconds = Math.trunc(Date.now() / 1000)
 
-  // TODO: is this checked in jwtVerify?
+  // maybe this is not needed?
   if (nowInSeconds > expires) {
     throw 'token has expired :('
   }
 }
 
-// https://www.typescriptlang.org/docs/handbook/declaration-merging.html#merging-interfaces
-declare module 'jose' {
-  export interface JWTPayload {
-    email: string
-  }
-}
-
-function decode(jwt: string): {
-  email: string
-} {
-  const payload = decodeJwt(jwt)
-  return {
-    email: payload.email,
-  }
+function decode(jwt: string): TokenClaims {
+  const { email, image } = decodeJwt(jwt)
+  return { email, image }
 }
 
 export { encode, verify, decode }

@@ -1,5 +1,5 @@
 import styles from './page.module.css'
-import { Provider, authorizationRedirectUrl } from '@/auth'
+import { Provider, authorizationRedirectUrl } from '@/auth/auth'
 
 export default function Home() {
   return (

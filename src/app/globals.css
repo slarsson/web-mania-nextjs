@@ -72,3 +72,7 @@ kbd {
   box-shadow: 0px 0px 200px 20px #fff;
   font-weight: bold;
 }
+
+img {
+  max-width: 100px;
+}

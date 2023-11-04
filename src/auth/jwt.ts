@@ -1,4 +1,4 @@
-import { SignJWT, jwtVerify } from 'jose'
+import { SignJWT, jwtVerify, decodeJwt } from 'jose'
 
 const JWT_SECRET = process.env.JWT_SECRECT ?? ''
 
@@ -30,4 +30,20 @@ async function verify(token: string): Promise<void> {
   }
 }
 
-export { encode, verify }
+// https://www.typescriptlang.org/docs/handbook/declaration-merging.html#merging-interfaces
+declare module 'jose' {
+  export interface JWTPayload {
+    email: string
+  }
+}
+
+function decode(jwt: string): {
+  email: string
+} {
+  const payload = decodeJwt(jwt)
+  return {
+    email: payload.email,
+  }
+}
+
+export { encode, verify, decode }

@@ -11,6 +11,13 @@ export default function Page({
   const router = useRouter()
   const { loading, error } = useTokenEndpoint(extractCodeParam(searchParams))
 
+  useEffect(() => {
+    if (loading && !error) {
+      return
+    }
+    router.push('/profile')
+  }, [loading, router, error])
+
   if (loading) {
     return <div>loading...</div>
   }
@@ -18,8 +25,6 @@ export default function Page({
   if (error) {
     return <div>error: {JSON.stringify(error)}</div>
   }
-
-  router.push('/profile')
 }
 
 function extractCodeParam(params: {
